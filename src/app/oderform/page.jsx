@@ -3,18 +3,63 @@ import {
     Button,
 } from "@heroui/react";
 import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 function CheckoutContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const bikeName = searchParams.get("bikename") || searchParams.get("bikeName") || searchParams.get("name") || "";
     const price = searchParams.get("price") || "";
 
     const [payment, setPayment] = useState("cash");
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert("Order Confirmed Successfully!");
+        setSubmitting(true);
+
+        const orderData = {
+            bikeName,
+            price: Number(price) || 0,
+            customerName: e.target.customerName.value,
+            phone: e.target.phone.value,
+            address: e.target.address.value,
+            city: e.target.city.value,
+            paymentMethod: payment,
+            status: "Pending",
+            orderDate: new Date().toLocaleDateString()
+        };
+
+        try {
+            const res = await fetch("http://localhost:5000/oders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData),
+            });
+            
+            if (res.ok) {
+                const result = await res.json();
+                const newId = result.insertedId || result._id;
+                if (newId) {
+                    orderData._id = newId;
+                    localStorage.setItem(`booking_${newId}`, JSON.stringify(orderData));
+                    alert("Order Confirmed Successfully!");
+                    router.push(`/mybooking/${newId}`);
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error("Backend order submission error:", error);
+        }
+
+        // Fallback if backend is down
+        const fallbackId = "local_" + Date.now();
+        orderData._id = fallbackId;
+        localStorage.setItem(`booking_${fallbackId}`, JSON.stringify(orderData));
+        alert("Order Confirmed (Saved Locally)!");
+        router.push(`/mybooking/${fallbackId}`);
     };
     const handleCancel = () => {
         const confirmCancel = confirm("Are you sure you want to cancel?");
@@ -32,11 +77,11 @@ function CheckoutContent() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-1">
                         <label className="block text-sm font-bold text-slate-700">Full Name</label>
-                        <input type="text" placeholder="Full Name" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-600 outline-none" required />
+                        <input type="text" name="customerName" placeholder="Full Name" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-600 outline-none" required />
                     </div>
                     <div className="space-y-1">
                         <label className="block text-sm font-bold text-slate-700">Phone Number</label>
-                        <input type="tel" placeholder="Phone Number" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-600 outline-none" required />
+                        <input type="tel" name="phone" placeholder="Phone Number" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-600 outline-none" required />
                     </div>
                 </div>
 
@@ -55,11 +100,11 @@ function CheckoutContent() {
 
                 <div className="space-y-1">
                     <label className="block text-sm font-bold text-slate-700">Shipping Address</label>
-                    <textarea placeholder="Shipping Address" className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-600 resize-none" rows="3" required />
+                    <textarea name="address" placeholder="Shipping Address" className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-600 resize-none" rows="3" required />
                 </div>
                 <div className="space-y-1">
                     <label className="block text-sm font-bold text-slate-700">City</label>
-                    <input type="text" placeholder="City" className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-600" required />
+                    <input type="text" name="city" placeholder="City" className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-600" required />
                 </div>
 
                 {/* Payment */}
@@ -88,7 +133,9 @@ function CheckoutContent() {
                 </div>
 
                 <div className="flex gap-4">
-                    <Button type="submit" className="w-full bg-green-600 text-white font-bold text-lg">Confirm Order</Button>
+                    <Button type="submit" disabled={submitting} className="w-full bg-green-600 text-white font-bold text-lg">
+                        {submitting ? "Confirming..." : "Confirm Order"}
+                    </Button>
                     <Button type="button" color="danger" variant="flat" onClick={handleCancel} className="w-full">Cancel</Button>
                 </div>
 

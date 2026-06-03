@@ -17,7 +17,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
           <Image
-            src="/assets/navlogo.jpg"
+             src="/assests/Navlogo.png"
             alt="Moto Logo"
             width={48}
             height={48}
@@ -32,7 +32,7 @@ const Navbar = () => {
 </h2>
         </Link>
 
-        {/* Desktop Menu */}
+       
         <ul className="hidden md:flex items-center gap-8 font-semibold text-slate-600">
           
           <li className="relative group py-2">
@@ -50,14 +50,14 @@ const Navbar = () => {
           </li>
 
           <li className="relative group py-2">
-            <Link href="/dashboard" className="hover:text-green-600 transition">
+            <Link href="/mybooking" className="hover:text-green-600 transition">
               Dashboard
             </Link>
             <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all"></span>
           </li>
         </ul>
 
-        {/* Desktop Auth */}
+  
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <button className="px-5 py-2.5 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 transition">
@@ -82,7 +82,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Toggle */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="md:hidden p-2 rounded-lg bg-slate-100"
@@ -95,7 +94,7 @@ const Navbar = () => {
         </button>
       </nav>
 
-      {/* Mobile Menu */}
+      
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ${
           isOpen ? "max-h-96 opacity-100 border-t" : "max-h-0 opacity-0"
@@ -111,7 +110,7 @@ const Navbar = () => {
             All Bikes
           </Link>
 
-          <Link href="/dashboard" onClick={() => setIsOpen(false)} className="hover:text-green-600">
+          <Link href="/mybooking" onClick={() => setIsOpen(false)} className="hover:text-green-600">
             Dashboard
           </Link>
 
