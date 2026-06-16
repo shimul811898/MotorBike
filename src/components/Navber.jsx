@@ -106,7 +106,7 @@ const Navbar = () => {
             Home
           </Link>
 
-          <Link href="/all" onClick={() => setIsOpen(false)} className="hover:text-green-600">
+          <Link href="/all-bike" onClick={() => setIsOpen(false)} className="hover:text-green-600">
             All Bikes
           </Link>
 

@@ -26,12 +26,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/bikes" className="hover:text-green-600 transition">
+                <Link href="/all-bike" className="hover:text-green-600 transition">
                   All Bikes
                 </Link>
               </li>
               <li>
-                <Link href="/add-bike" className="hover:text-green-600 transition">
+                <Link href="#" className="hover:text-green-600 transition">
                   Add Bike
                 </Link>
               </li>

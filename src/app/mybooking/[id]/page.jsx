@@ -52,7 +52,7 @@ const MyBookingDetails = () => {
             <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4">
                 <div className="text-red-500 text-5xl">⚠️</div>
                 <h2 className="text-xl font-bold text-slate-700">Booking Not Found</h2>
-                <p className="text-slate-400 text-sm">We couldn't retrieve the details for this booking ID.</p>
+                <p className="text-slate-400 text-sm">We couldn&apos;t retrieve the details for this booking ID.</p>
             </div>
         );
     }

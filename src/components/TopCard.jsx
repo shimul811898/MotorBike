@@ -1,15 +1,20 @@
 import BikeCard from "./BikeCard";
 
 const TopCard = async () => {
-  const res = await fetch("http://localhost:5000/bikes", {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch bikes");
+  let bikes = [];
+  try {
+    const res = await fetch("http://localhost:5000/bikes", {
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        bikes = data;
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching top-rated bikes:", error);
   }
-
-  const bikes = await res.json();
 
   const topRated = bikes
     .sort((a, b) => b.rating - a.rating)
@@ -25,11 +30,17 @@ const TopCard = async () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {topRated.map((bike) => (
-          <BikeCard key={bike._id} allbike={bike} />
-        ))}
-      </div>
+      {topRated.length === 0 ? (
+        <div className="text-center py-10 text-slate-400 font-semibold bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+          No bikes available to display at the moment.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {topRated.map((bike) => (
+            <BikeCard key={bike._id} allbike={bike} />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

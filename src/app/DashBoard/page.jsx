@@ -79,7 +79,7 @@ export default function DashBoard() {
                 <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
                     <span className="text-5xl block mb-4">🏍️</span>
                     <h2 className="text-xl font-bold text-slate-700">No Bookings Found</h2>
-                    <p className="text-slate-400 mt-1 max-w-sm mx-auto">You haven't ordered any motorbikes yet. Visit our showroom to place your order!</p>
+                    <p className="text-slate-400 mt-1 max-w-sm mx-auto">You haven&apos;t ordered any motorbikes yet. Visit our showroom to place your order!</p>
                     <Link href="/all-bike" className="inline-block mt-6 px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition">
                         Explore Bikes
                     </Link>
