@@ -6,6 +6,7 @@ import {
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
+import { API_BASE_URL } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ function CheckoutContent() {
         };
 
         try {
-            const res = await fetch("http://localhost:5000/oders", {
+            const res = await fetch(`${API_BASE_URL}/oders`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

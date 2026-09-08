@@ -5,6 +5,7 @@ import OderCard from "@/components/OderCard";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { FaPlus, FaLock, FaMotorcycle } from "react-icons/fa";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function MyBookingsDashboard() {
     const { data: session, isPending } = useSession();
@@ -26,7 +27,7 @@ export default function MyBookingsDashboard() {
         const fetchBookings = async () => {
             let apiBookings = [];
             try {
-                const res = await fetch(`http://localhost:5000/oders?email=${encodeURIComponent(userEmail)}`);
+                const res = await fetch(`${API_BASE_URL}/oders?email=${encodeURIComponent(userEmail)}`);
                 if (res.ok) {
                     const data = await res.json();
                     if (Array.isArray(data)) {

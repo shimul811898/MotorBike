@@ -5,6 +5,7 @@ import OderCard from "@/components/OderCard";
 import { useParams } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
+import { API_BASE_URL } from "@/lib/api";
 
 const MyBookingDetails = () => {
     const params = useParams();
@@ -22,8 +23,8 @@ const MyBookingDetails = () => {
         const fetchBooking = async () => {
             try {
                 const url = userEmail 
-                    ? `http://localhost:5000/oders/${id}?email=${encodeURIComponent(userEmail)}` 
-                    : `http://localhost:5000/oders/${id}`;
+                    ? `${API_BASE_URL}/oders/${id}?email=${encodeURIComponent(userEmail)}` 
+                    : `${API_BASE_URL}/oders/${id}`;
                 const res = await fetch(url);
                 if (res.status === 403) {
                     setAccessDenied(true);

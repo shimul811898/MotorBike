@@ -1,5 +1,6 @@
 import { FaStar, FaMotorcycle, FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
+import { API_BASE_URL } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,7 @@ const Detailspage = async ({ params }) => {
     let bike = null;
 
     try {
-        const res = await fetch(`http://localhost:5000/bikes/${id}`, {
+        const res = await fetch(`${API_BASE_URL}/bikes/${id}`, {
             cache: "no-store",
         });
         if (res.ok) {

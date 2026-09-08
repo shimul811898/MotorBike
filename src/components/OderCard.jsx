@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaMotorcycle, FaUser, FaPhone, FaMapMarkerAlt, FaCreditCard, FaEnvelope } from "react-icons/fa";
+import { API_BASE_URL } from "@/lib/api";
 
 const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
   const router = useRouter();
@@ -28,7 +29,7 @@ const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
 
     try {
       if (allbike._id && !allbike._id.toString().startsWith("local_")) {
-        const res = await fetch(`http://localhost:5000/oders/${allbike._id}`, {
+        const res = await fetch(`${API_BASE_URL}/oders/${allbike._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updated)
@@ -60,7 +61,7 @@ const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
 
     try {
       if (allbike._id && !allbike._id.toString().startsWith("local_")) {
-        const res = await fetch(`http://localhost:5000/oders/${allbike._id}`, {
+        const res = await fetch(`${API_BASE_URL}/oders/${allbike._id}`, {
           method: "DELETE"
         });
         if (!res.ok) throw new Error("Failed to delete from backend");

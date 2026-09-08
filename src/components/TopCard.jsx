@@ -1,9 +1,10 @@
 import BikeCard from "./BikeCard";
+import { API_BASE_URL } from "@/lib/api";
 
 const TopCard = async () => {
   let bikes = [];
   try {
-    const res = await fetch("http://localhost:5000/bikes", {
+    const res = await fetch(`${API_BASE_URL}/bikes`, {
       cache: "no-store",
     });
     if (res.ok) {
