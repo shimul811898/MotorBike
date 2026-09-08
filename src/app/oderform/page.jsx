@@ -1,17 +1,23 @@
 "use client";
+
 import {
     Button,
 } from "@heroui/react";
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
+
+export const dynamic = "force-dynamic";
 
 function CheckoutContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { data: session } = useSession();
     const bikeName = searchParams.get("bikename") || searchParams.get("bikeName") || searchParams.get("name") || "";
     const price = searchParams.get("price") || "";
 
     const [payment, setPayment] = useState("cash");
+    const [provider, setProvider] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -22,10 +28,11 @@ function CheckoutContent() {
             bikeName,
             price: Number(price) || 0,
             customerName: e.target.customerName.value,
+            userEmail: session?.user?.email || "",
             phone: e.target.phone.value,
             address: e.target.address.value,
             city: e.target.city.value,
-            paymentMethod: payment,
+            paymentMethod: payment === "online" && provider ? `Online (${provider})` : payment,
             status: "Pending",
             orderDate: new Date().toLocaleDateString()
         };
@@ -61,93 +68,158 @@ function CheckoutContent() {
         alert("Order Confirmed (Saved Locally)!");
         router.push(`/mybooking/${fallbackId}`);
     };
+
     const handleCancel = () => {
         const confirmCancel = confirm("Are you sure you want to cancel?");
         if (confirmCancel) {
-            document.querySelector("form").reset();
+            router.push("/all-bike");
         }
     };
 
     return (
-        <div className="p-10 space-y-8 max-w-4xl mx-auto shadow my-10 rounded-2xl bg-white border border-slate-100">
-            <h2 className="text-2xl font-black text-slate-800 mb-6">Checkout details</h2>
+        <div className="p-8 sm:p-10 space-y-8 max-w-4xl mx-auto my-10 rounded-3xl glass-panel relative overflow-hidden">
+            {/* Header */}
+            <div>
+                <h2 className="text-3xl font-black text-white tracking-tight">Checkout Details</h2>
+                {session?.user?.email && (
+                    <div className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/20">
+                        <span>🔒</span> Booking Account: <span className="font-bold text-white">{session.user.email}</span>
+                    </div>
+                )}
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Full Name & Phone Number */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-1">
-                        <label className="block text-sm font-bold text-slate-700">Full Name</label>
-                        <input type="text" name="customerName" placeholder="Full Name" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-600 outline-none" required />
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">Full Name</label>
+                        <input
+                            type="text"
+                            name="customerName"
+                            defaultValue={session?.user?.name || ""}
+                            placeholder="Full Name"
+                            className="w-full glass-input rounded-2xl px-4 py-3.5 outline-none font-medium"
+                            required
+                        />
                     </div>
-                    <div className="space-y-1">
-                        <label className="block text-sm font-bold text-slate-700">Phone Number</label>
-                        <input type="tel" name="phone" placeholder="Phone Number" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-600 outline-none" required />
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">Phone Number</label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="+880 1..."
+                            className="w-full glass-input rounded-2xl px-4 py-3.5 outline-none font-medium"
+                            required
+                        />
                     </div>
                 </div>
 
                 {/* Bike Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 py-4 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-5 rounded-2xl bg-white/5 border border-white/10">
                     <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Bike Name</label>
-                        <input type="text" value={bikeName || ""} readOnly className="w-full rounded-2xl bg-slate-100 p-3 border border-slate-200 cursor-not-allowed outline-none font-semibold text-slate-700" />
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Selected Bike</label>
+                        <input
+                            type="text"
+                            value={bikeName || ""}
+                            readOnly
+                            className="w-full rounded-xl bg-black/40 p-3 border border-white/10 cursor-not-allowed outline-none font-bold text-white"
+                        />
                     </div>
                     <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Bike Price</label>
-                        <input type="text" value={price ? (isNaN(Number(price)) ? price : `৳ ${Number(price).toLocaleString()}`) : ""} readOnly className="w-full rounded-2xl bg-slate-100 p-3 border border-slate-200 cursor-not-allowed outline-none font-bold text-green-600" />
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Total Price</label>
+                        <input
+                            type="text"
+                            value={price ? (isNaN(Number(price)) ? price : `৳ ${Number(price).toLocaleString()}`) : ""}
+                            readOnly
+                            className="w-full rounded-xl bg-black/40 p-3 border border-white/10 cursor-not-allowed outline-none font-black text-emerald-400 text-lg"
+                        />
                     </div>
                 </div>
 
-
-                <div className="space-y-1">
-                    <label className="block text-sm font-bold text-slate-700">Shipping Address</label>
-                    <textarea name="address" placeholder="Shipping Address" className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-600 resize-none" rows="3" required />
+                <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">Shipping Address</label>
+                    <textarea
+                        name="address"
+                        placeholder="House no, Road, Area..."
+                        className="w-full glass-input rounded-2xl px-4 py-3 outline-none resize-none font-medium"
+                        rows="3"
+                        required
+                    />
                 </div>
-                <div className="space-y-1">
-                    <label className="block text-sm font-bold text-slate-700">City</label>
-                    <input type="text" name="city" placeholder="City" className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-600" required />
+
+                <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">City</label>
+                    <input
+                        type="text"
+                        name="city"
+                        placeholder="Dhaka, Chittagong, Sylhet..."
+                        className="w-full glass-input rounded-2xl px-4 py-3.5 outline-none font-medium"
+                        required
+                    />
                 </div>
 
-                {/* Payment */}
+                {/* Payment Options */}
                 <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Payment Method</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Payment Method</label>
                     <div className="grid grid-cols-2 gap-3 mb-4">
-                        <label className={`cursor-pointer p-4 rounded-xl border-2 text-center transition-all flex items-center justify-center gap-2 ${payment === 'cash' ? 'border-green-600 bg-green-50 text-green-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+                        <label className={`cursor-pointer p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 ${
+                            payment === 'cash'
+                                ? 'border-emerald-500 bg-emerald-500/15 text-emerald-300 font-bold'
+                                : 'border-white/10 bg-white/5 text-slate-400 hover:bg-white/10'
+                        }`}>
                             <input type="radio" name="pay" className="hidden" checked={payment === 'cash'} onChange={() => setPayment('cash')} />
-                            <span className="font-bold text-sm">💵 Cash on Delivery</span>
+                            <span className="text-sm">💵 Cash on Delivery</span>
                         </label>
-                        <label className={`cursor-pointer p-4 rounded-xl border-2 text-center transition-all flex items-center justify-center gap-2 ${payment === 'online' ? 'border-green-600 bg-green-50 text-green-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+
+                        <label className={`cursor-pointer p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 ${
+                            payment === 'online'
+                                ? 'border-emerald-500 bg-emerald-500/15 text-emerald-300 font-bold'
+                                : 'border-white/10 bg-white/5 text-slate-400 hover:bg-white/10'
+                        }`}>
                             <input type="radio" name="pay" className="hidden" checked={payment === 'online'} onChange={() => setPayment('online')} />
-                            <span className="font-bold text-sm">💳 Online / Mobile</span>
+                            <span className="text-sm">💳 Online / Mobile</span>
                         </label>
                     </div>
 
                     {payment === 'online' && (
-                        <select className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-600 bg-white font-semibold text-slate-700">
-                            <option value="">Choose an option</option>
-                            <option value="bkash">bKash</option>
-                            <option value="nagad">Nagad</option>
-                            <option value="rocket">Rocket</option>
-                            <option value="card">Credit/Debit Card</option>
+                        <select
+                            value={provider}
+                            onChange={(e) => setProvider(e.target.value)}
+                            className="w-full glass-input rounded-2xl px-4 py-3.5 outline-none font-semibold text-white bg-[#0e1422]"
+                        >
+                            <option value="">Select Payment Gateway</option>
+                            <option value="bKash">bKash (Instant)</option>
+                            <option value="Nagad">Nagad</option>
+                            <option value="Rocket">Rocket</option>
+                            <option value="Credit/Debit Card">Credit/Debit Card (Visa/Mastercard)</option>
                         </select>
                     )}
                 </div>
 
-                <div className="flex gap-4">
-                    <Button type="submit" disabled={submitting} className="w-full bg-green-600 text-white font-bold text-lg">
-                        {submitting ? "Confirming..." : "Confirm Order"}
+                <div className="flex gap-4 pt-2">
+                    <Button
+                        type="submit"
+                        disabled={submitting}
+                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-base shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 cursor-pointer"
+                    >
+                        {submitting ? "Confirming Booking..." : "Confirm Order Voucher"}
                     </Button>
-                    <Button type="button" color="danger" variant="flat" onClick={handleCancel} className="w-full">Cancel</Button>
+                    <Button
+                        type="button"
+                        onClick={handleCancel}
+                        className="w-full py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 text-slate-300 font-bold cursor-pointer"
+                    >
+                        Cancel
+                    </Button>
                 </div>
-
             </form>
         </div>
     );
 }
 
-// মূল এক্সপোর্ট
 export default function CheckoutForm() {
     return (
-        <Suspense fallback={<div className="text-center py-10 font-semibold text-slate-500">Loading form...</div>}>
+        <Suspense fallback={<div className="text-center py-20 font-semibold text-slate-400">Loading checkout...</div>}>
             <CheckoutContent />
         </Suspense>
     );

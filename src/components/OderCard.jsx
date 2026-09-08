@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaMotorcycle, FaUser, FaPhone, FaMapMarkerAlt, FaCreditCard } from "react-icons/fa";
+import { FaMotorcycle, FaUser, FaPhone, FaMapMarkerAlt, FaCreditCard, FaEnvelope } from "react-icons/fa";
 
 const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
   const router = useRouter();
@@ -17,7 +17,7 @@ const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
   });
 
   if (!allbike) return null;
-  const { bikeName, price, customerName, phone, address, city, paymentMethod, status, orderDate } = allbike;
+  const { bikeName, price, customerName, phone, address, city, paymentMethod, status, orderDate, userEmail } = allbike;
 
   const handleSave = async () => {
     setSubmitting(true);
@@ -44,7 +44,6 @@ const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
         onUpdateSuccess(updated);
       } else {
         router.refresh();
-        // Force refresh state by reloading page if not in dashboard list
         window.location.reload();
       }
     } catch (error) {
@@ -74,7 +73,6 @@ const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
         onDeleteSuccess(allbike._id);
       } else {
         router.push("/mybooking");
-        // Force page reload/redirect
         window.location.href = "/mybooking";
       }
     } catch (error) {
@@ -84,108 +82,126 @@ const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden p-6 max-w-xl mx-auto my-6 space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center border-b pb-4">
+    <div className="glass-card rounded-3xl p-6 max-w-xl mx-auto my-6 space-y-6 relative overflow-hidden border border-white/10 shadow-2xl">
+      {/* Top Header */}
+      <div className="flex justify-between items-center border-b border-white/10 pb-4">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-800">Booking Voucher</h2>
-          <p className="text-xs text-slate-400 mt-1">Date: {orderDate || new Date().toLocaleDateString()}</p>
+          <h3 className="text-xl font-black text-white flex items-center gap-2">
+            <span>🎟️</span> Booking Voucher
+          </h3>
+          <p className="text-xs text-slate-400 mt-1 font-medium">Date: {orderDate || new Date().toLocaleDateString()}</p>
         </div>
-        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase rounded-full">
-          {status || "Pending"}
+        <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase rounded-full">
+          {status || "Confirmed"}
         </span>
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-slate-700 font-semibold">
-          <FaMotorcycle className="text-green-600 animate-pulse" />
+      {/* Bike Info */}
+      <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex justify-between items-center">
+        <div className="flex items-center gap-2.5 text-white font-bold text-base">
+          <FaMotorcycle className="text-emerald-400 text-lg" />
           <span>{bikeName}</span>
         </div>
-        <div className="text-lg font-black text-green-600">
+        <div className="text-xl font-black text-emerald-400">
           ৳ {Number(price || 0).toLocaleString()}
         </div>
       </div>
 
-      <div className="border-t pt-4 space-y-3.5 text-sm text-slate-600">
+      {/* Details List */}
+      <div className="space-y-3.5 text-sm text-slate-300">
         {/* Customer Name */}
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <FaUser className="text-slate-400 shrink-0" />
-            <span className="font-semibold text-slate-500">Name:</span>
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase">
+            <FaUser className="text-emerald-400" />
+            <span>Customer Name:</span>
           </div>
           {isEditing ? (
             <input
               type="text"
               value={formData.customerName}
               onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-green-600 text-slate-700 bg-white"
+              className="w-full glass-input rounded-xl px-3.5 py-2 outline-none"
             />
           ) : (
-            <strong className="text-slate-850 pl-6">{customerName}</strong>
+            <span className="text-white font-bold text-sm pl-6">{customerName}</span>
           )}
         </div>
 
         {/* Phone */}
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <FaPhone className="text-slate-400 shrink-0" />
-            <span className="font-semibold text-slate-500">Phone:</span>
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase">
+            <FaPhone className="text-emerald-400" />
+            <span>Phone:</span>
           </div>
           {isEditing ? (
             <input
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-green-600 text-slate-700 bg-white"
+              className="w-full glass-input rounded-xl px-3.5 py-2 outline-none"
             />
           ) : (
-            <strong className="text-slate-850 pl-6">{phone}</strong>
+            <span className="text-white font-bold text-sm pl-6">{phone}</span>
           )}
         </div>
 
         {/* Address & City */}
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <FaMapMarkerAlt className="text-slate-400 shrink-0" />
-            <span className="font-semibold text-slate-500">Address & City:</span>
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase">
+            <FaMapMarkerAlt className="text-emerald-400" />
+            <span>Address & City:</span>
           </div>
           {isEditing ? (
-            <div className="grid grid-cols-2 gap-2 pl-0">
+            <div className="grid grid-cols-2 gap-2">
               <input
                 type="text"
                 placeholder="Address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-green-600 text-slate-700 bg-white"
+                className="w-full glass-input rounded-xl px-3.5 py-2 outline-none"
               />
               <input
                 type="text"
                 placeholder="City"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-green-600 text-slate-700 bg-white"
+                className="w-full glass-input rounded-xl px-3.5 py-2 outline-none"
               />
             </div>
           ) : (
-            <strong className="text-slate-850 pl-6">{address}, {city}</strong>
+            <span className="text-white font-bold text-sm pl-6">{address}, {city}</span>
           )}
         </div>
 
         {/* Payment */}
         <div className="flex items-center gap-2">
-          <FaCreditCard className="text-slate-400 shrink-0" />
-          <span className="font-semibold text-slate-500 uppercase">Payment:</span>
-          <strong className="text-slate-800 uppercase">{paymentMethod === "cash" ? "Cash on Delivery" : "Online Payment"}</strong>
+          <FaCreditCard className="text-emerald-400" />
+          <span className="text-slate-400 text-xs font-bold uppercase">Payment:</span>
+          <span className="text-white font-bold text-xs uppercase px-2 py-0.5 rounded bg-white/10">
+            {paymentMethod === "cash" ? "Cash on Delivery" : "Online Payment"}
+          </span>
         </div>
+
+        {/* User Account / Email */}
+        {userEmail && (
+          <div className="flex items-center gap-2">
+            <FaEnvelope className="text-emerald-400" />
+            <span className="text-slate-400 text-xs font-bold uppercase">Account:</span>
+            <span className="text-emerald-300 font-mono text-xs bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md truncate">
+              {userEmail}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3 justify-end border-t pt-4">
+      <div className="flex gap-3 justify-end border-t border-white/10 pt-4">
         {isEditing ? (
           <>
             <button
               onClick={handleSave}
               disabled={submitting}
-              className="px-4 py-2 bg-green-600 text-white font-bold text-xs rounded-xl hover:bg-green-700 transition"
+              className="px-4 py-2 bg-emerald-500 text-white font-bold text-xs rounded-xl hover:bg-emerald-600 transition cursor-pointer"
             >
               {submitting ? "Saving..." : "Save"}
             </button>
@@ -200,7 +216,7 @@ const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
                 });
               }}
               disabled={submitting}
-              className="px-4 py-2 bg-slate-200 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-300 transition"
+              className="px-4 py-2 bg-white/10 text-slate-300 font-bold text-xs rounded-xl hover:bg-white/20 transition cursor-pointer"
             >
               Cancel
             </button>
@@ -209,13 +225,13 @@ const OderCard = ({ allbike, onDeleteSuccess, onUpdateSuccess }) => {
           <>
             <button
               onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-amber-500 text-white font-bold text-xs rounded-xl hover:bg-amber-600 transition"
+              className="px-4 py-2 bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold text-xs rounded-xl hover:bg-amber-500 hover:text-white transition cursor-pointer"
             >
               Edit
             </button>
             <button
               onClick={handleDelete}
-              className="px-4 py-2 bg-red-600 text-white font-bold text-xs rounded-xl hover:bg-red-700 transition"
+              className="px-4 py-2 bg-red-500/20 border border-red-500/40 text-red-300 font-bold text-xs rounded-xl hover:bg-red-500 hover:text-white transition cursor-pointer"
             >
               Delete
             </button>
