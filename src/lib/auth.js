@@ -21,6 +21,13 @@ const client = globalForMongo._mongoClientAuth || (process.env.MONGODB_URI ? new
 const db = client ? client.db("motobike") : null;
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"),
+  trustedOrigins: [
+    "http://localhost:3000",
+    ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    "https://*.vercel.app",
+  ],
   database: db ? mongodbAdapter(db, { client }) : undefined,
   emailAndPassword: {
     enabled: true,
