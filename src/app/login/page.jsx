@@ -66,28 +66,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden">
+    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#0b0f17]">
+      <div className="max-w-md w-full space-y-8 bg-[#121826] p-8 md:p-10 rounded-3xl shadow-2xl border border-white/10">
         
-        {/* Glow corner */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/15 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
-
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mb-2 shadow-inner">
-            <FaMotorcycle size={30} />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 shadow-sm border border-emerald-500/20">
+            <FaMotorcycle size={32} />
           </div>
           <h2 className="text-3xl font-black text-white tracking-tight">
-            Welcome Back
+            Welcome Back!
           </h2>
           <p className="text-sm text-slate-400 font-medium">
-            Sign in to access your bookings & garage
+            Sign in to access your motorbike bookings & profile
           </p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="p-4 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-300 text-sm font-semibold flex items-center gap-2 backdrop-blur-sm">
+          <div className="p-4 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-300 text-sm font-semibold flex items-center gap-2">
             <span>⚠️</span>
             <span>{error}</span>
           </div>
@@ -97,7 +94,7 @@ export default function LoginPage() {
         <form className="mt-8 space-y-5" onSubmit={handleEmailLogin}>
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-extrabold uppercase text-slate-400 tracking-wider mb-2">
+              <label className="block text-xs font-extrabold uppercase text-slate-300 tracking-wider mb-1.5">
                 Email Address
               </label>
               <div className="relative">
@@ -110,13 +107,13 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl glass-input outline-none font-medium placeholder-slate-500"
+                  className="w-full pl-11 pr-4 py-3.5 border border-white/10 rounded-2xl text-white font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition bg-[#0f172a]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-extrabold uppercase text-slate-400 tracking-wider mb-2">
+              <label className="block text-xs font-extrabold uppercase text-slate-300 tracking-wider mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -129,7 +126,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl glass-input outline-none font-medium placeholder-slate-500"
+                  className="w-full pl-11 pr-4 py-3.5 border border-white/10 rounded-2xl text-white font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition bg-[#0f172a]"
                 />
               </div>
             </div>
@@ -159,7 +156,7 @@ export default function LoginPage() {
           type="button"
           onClick={handleGoogleLogin}
           disabled={loading || googleLoading}
-          className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-sm transition shadow-sm cursor-pointer disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border border-white/10 rounded-2xl bg-[#0f172a] text-slate-200 font-bold text-sm hover:bg-white/5 hover:border-white/20 transition shadow-sm cursor-pointer disabled:opacity-50"
         >
           <FaGoogle className="text-red-400 text-lg" />
           <span>{googleLoading ? "Connecting to Google..." : "Sign in with Google"}</span>
